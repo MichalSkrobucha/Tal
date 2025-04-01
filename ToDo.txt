@@ -1,0 +1,9 @@
+main'ów nie zmieniać
+edytujemy tylko generatorApp, solverApp i inne pliki solvera (pewnie trzeba będzie zrobić solverLogic)
+
+generator:
+* czytanie danych z pliku wbije je w gui
+# co jak jest dodawany item ponad rozmiar okna ?
+
+solver:
+* wszystko
