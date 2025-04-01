@@ -84,16 +84,47 @@ class generatorApp(QMainWindow):
         self.addItem()
 
     def setupItems(self) -> None:
-        n: int = len(self.itemWeights_ledits)
+        current: int = len(self.itemWeights_ledits)
+        toBe: int = len(self.items)
 
-        # liczba value, weight, remove button sa ostosowywane (odpoweidnie ustawienie tychże i additemButton)
-        # wartości są kolejno dodawane do value, weight
+        if toBe >= current:
+            for _ in range(toBe - current):
+                self.addItem()
+        else:
+            pass
+            for _ in range(current - toBe):
+                self.removeItem(toBe)
 
-    def removeItem(self) -> None:
-        id: int = self.removeitem_buttons.index(self.sender())
+        for i in range(toBe):
+            self.itemValues_ledits[i].setText(str(self.items[i][0]))
+            self.itemWeights_ledits[i].setText(str(self.items[i][1]))
 
+    def removeItem(self, id: int) -> None:
         # usunięcie itemu (value, weight, removeButton) o wskazanym id
-        # przesunięcie niższych itemów i addItemButton w górę
+        delV: QLineEdit = self.itemValues_ledits[id]
+        delW: QLineEdit = self.itemWeights_ledits[id]
+        delR: QPushButton = self.removeitem_buttons[id]
+        del self.itemValues_ledits[id]
+        del self.itemWeights_ledits[id]
+        del self.removeitem_buttons[id]
+        delV.deleteLater()
+        delW.deleteLater()
+        delR.deleteLater()
+
+        # przesunięcie niższych itemów w górę
+        for i in range(len(self.itemValues_ledits)):
+            self.itemValues_ledits[i].move(75, 170 + 50 * i)
+
+        for i in range(len(self.itemWeights_ledits)):
+            self.itemWeights_ledits[i].move(275, 170 + 50 * i)
+
+        for i in range(len(self.removeitem_buttons)):
+            self.removeitem_buttons[i].move(450, 170 + 50 * i)
+
+        self.addItem_button.move(450, 170 + 50 * len(self.itemValues_ledits))
+
+    def removeItemSlot(self, ) -> None:
+        self.removeItem(self.removeitem_buttons.index(self.sender()))
 
     def addItem(self) -> None:
         self.itemValues_ledits.append(QLineEdit(self))
@@ -116,7 +147,7 @@ class generatorApp(QMainWindow):
         self.removeitem_buttons[-1].setFixedSize(40, 40)
         self.removeitem_buttons[-1].move(450, 120 + 50 * len(self.removeitem_buttons))
         self.removeitem_buttons[-1].setText('-')
-        self.removeitem_buttons[-1].clicked.connect(self.removeItem)
+        self.removeitem_buttons[-1].clicked.connect(self.removeItemSlot)
         self.removeitem_buttons[-1].show()
 
         self.items.append([0.0, 0.0])
@@ -156,6 +187,8 @@ class generatorApp(QMainWindow):
 
                 self.capacity = data['capacity']
                 self.items = data['items']
+
+                print(self.items)
 
                 self.backpackCapacity_ledit.setText(str(self.capacity))
                 self.setupItems()
