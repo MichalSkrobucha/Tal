@@ -1,5 +1,6 @@
 import json
 import sys
+from random import expovariate, normalvariate
 
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QMainWindow, QPushButton, QLabel, QLineEdit, QFileDialog
@@ -14,6 +15,7 @@ class generatorApp(QMainWindow):
 
         self.readFile_button: QPushButton
         self.saveFile_button: QPushButton
+        self.randomize_button: QPushButton
         self.backpackCapacity_label: QLabel
         self.backpackCapacity_ledit: QLineEdit
         self.itemValue_label: QLabel
@@ -31,18 +33,25 @@ class generatorApp(QMainWindow):
         self.move(710, 270)
 
         self.readFile_button = QPushButton(self)
-        self.readFile_button.setFixedSize(150, 40)
-        self.readFile_button.move(75, 20)
+        self.readFile_button.setFixedSize(130, 40)
+        self.readFile_button.move(30, 20)
         self.readFile_button.setText('Read from file')
         self.readFile_button.clicked.connect(self.readFile)
         self.readFile_button.show()
 
         self.saveFile_button = QPushButton(self)
-        self.saveFile_button.setFixedSize(150, 40)
-        self.saveFile_button.move(275, 20)
+        self.saveFile_button.setFixedSize(130, 40)
+        self.saveFile_button.move(185, 20)
         self.saveFile_button.setText('Save to file')
         self.saveFile_button.clicked.connect(self.saveFile)
         self.saveFile_button.show()
+
+        self.randomize_button = QPushButton(self)
+        self.randomize_button.setFixedSize(130, 40)
+        self.randomize_button.move(340, 20)
+        self.randomize_button.setText('Randomize')
+        self.randomize_button.clicked.connect(self.randomize)
+        self.randomize_button.show()
 
         self.backpackCapacity_label = QLabel(self)
         self.backpackCapacity_label.setFixedSize(150, 40)
@@ -132,7 +141,7 @@ class generatorApp(QMainWindow):
         self.itemValues_ledits[-1].move(75, 120 + 50 * len(self.itemValues_ledits))
         self.itemValues_ledits[-1].setText('0,0')
         self.itemValues_ledits[-1].setValidator(QDoubleValidator(0.0, sys.float_info.max, 16))
-        self.itemValues_ledits[-1].textEdited.connect(self.valueEdited)
+        self.itemValues_ledits[-1].textEdited.connect(self.valueEditedSlot)
         self.itemValues_ledits[-1].show()
 
         self.itemWeights_ledits.append(QLineEdit(self))
@@ -140,7 +149,7 @@ class generatorApp(QMainWindow):
         self.itemWeights_ledits[-1].move(275, 120 + 50 * len(self.itemValues_ledits))
         self.itemWeights_ledits[-1].setText('0,0')
         self.itemWeights_ledits[-1].setValidator(QDoubleValidator(0.0, sys.float_info.max, 16))
-        self.itemWeights_ledits[-1].textEdited.connect(self.weightEdited)
+        self.itemWeights_ledits[-1].textEdited.connect(self.weightEditedSlot)
         self.itemWeights_ledits[-1].show()
 
         self.removeitem_buttons.append(QPushButton(self))
@@ -159,11 +168,11 @@ class generatorApp(QMainWindow):
     def capacityEdited(self, text: str) -> None:
         self.capacity = float(text.replace(',', '.'))
 
-    def valueEdited(self, text: str) -> None:
+    def valueEditedSlot(self, text: str) -> None:
         id: int = self.itemValues_ledits.index(self.sender())
         self.items[id][0] = float(text.replace(',', '.'))
 
-    def weightEdited(self, text: str) -> None:
+    def weightEditedSlot(self, text: str) -> None:
         id: int = self.itemWeights_ledits.index(self.sender())
         self.items[id][1] = float(text.replace(',', '.'))
 
@@ -175,13 +184,13 @@ class generatorApp(QMainWindow):
                 data: dict = json.load(file)
 
                 for v, w in data['items']:
-                    if 0.0 > float(v):
+                    if float(v) < 0.0:
                         print(f'Data contains item with negative value: ({v}, {w})', file=sys.stderr)
                         return
 
-                    if 0.0 > float(w) or float(w) > float(data['capacity']):
+                    if float(w) < 0.0:
                         print(
-                            f'Data contains item with weigth that is either negative or grater than capacity: ({v}, {w})',
+                            f'Data contains item with negative weight: ({v}, {w})',
                             file=sys.stderr)
                         return
 
@@ -209,3 +218,29 @@ class generatorApp(QMainWindow):
         else:
             print('Something went wrong', file=sys.stderr)
             return
+
+    def randomize(self) -> None:
+        minWeight : float = sys.float_info.max
+        sumWeight: float = 0.0
+
+        for i, item in enumerate(self.items):
+            item[0] = expovariate(1.0)
+            weight : float = expovariate(1.0)
+            item[1] = weight
+
+            if weight < minWeight:
+                minWeight = weight
+
+            sumWeight += weight
+
+            self.itemValues_ledits[i].setText(f'{item[0]:.3f}')
+            self.itemWeights_ledits[i].setText(f'{item[1]:.3f}')
+
+
+        self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6)
+
+        while self.capacity < 0.0:
+            self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6)
+
+        self.backpackCapacity_ledit.setText(f'{self.capacity:.3f}')
+
