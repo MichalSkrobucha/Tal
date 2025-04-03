@@ -258,8 +258,8 @@ class generatorApp(QMainWindow):
         sumWeight: float = 0.0
 
         for i, item in enumerate(self.items):
-            item[0] = expovariate(0.5)
-            weight : float = expovariate(0.5)
+            item[0] = expovariate(0.5).__round__(3)
+            weight : float = expovariate(0.5).__round__(3)
             item[1] = weight
 
             if weight < minWeight:
@@ -271,7 +271,7 @@ class generatorApp(QMainWindow):
             self.itemWeights_ledits[i].setText(f'{item[1]:.3f}')
 
 
-        self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6)
+        self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6).__round__(3)
 
         while self.capacity < 0.0:
             self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6)
