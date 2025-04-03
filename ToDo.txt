@@ -1,8 +1,8 @@
 main'ów nie zmieniać
-edytujemy tylko generatorApp, solverApp i inne pliki solvera (pewnie trzeba będzie zrobić solverLogic)
-
-generator:
-* co jak jest dodawany item ponad rozmiar okna
+edytujemy tylko solverApp i inne pliki solvera (pewnie trzeba będzie zrobić solverLogic)
 
 solver:
-* wszystko
+* czytanie z pliku (z walidacją wejścia)
+* wybór algorytmu
+* rozwiązywanie
+* prezentacja wyników

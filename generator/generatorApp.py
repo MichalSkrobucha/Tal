@@ -2,8 +2,10 @@ import json
 import sys
 from random import expovariate, normalvariate
 
-from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QMainWindow, QPushButton, QLabel, QLineEdit, QFileDialog
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QDoubleValidator, QScrollEvent
+from PyQt6.QtWidgets import QMainWindow, QPushButton, QLabel, QLineEdit, QFileDialog, QScrollArea, QWidget, QVBoxLayout, \
+    QSizePolicy
 
 
 class generatorApp(QMainWindow):
@@ -19,11 +21,13 @@ class generatorApp(QMainWindow):
         self.backpackCapacity_label: QLabel
         self.backpackCapacity_ledit: QLineEdit
         self.itemValue_label: QLabel
-        self.itemValues_ledits: list[QLineEdit] = []
         self.itemWeight_label: QLabel
+        self.itemData_scroll : QScrollArea
+        self.scrollable_widget : QWidget
+        self.itemValues_ledits: list[QLineEdit] = []
         self.itemWeights_ledits: list[QLineEdit] = []
-        self.addItem_button: QPushButton
         self.removeitem_buttons: list[QPushButton] = []
+        self.addItem_button: QPushButton
 
         self.initUI()
 
@@ -79,18 +83,40 @@ class generatorApp(QMainWindow):
         self.itemWeight_label.setText('Item Weight:')
         self.itemWeight_label.show()
 
-        self.addItem_button = QPushButton(self)
-        self.addItem_button.setFixedSize(40, 40)
-        self.addItem_button.move(450, 220)
-        self.addItem_button.setText('+')
-        self.addItem_button.clicked.connect(self.addItem)
-        self.addItem_button.show()
+        self.itemData_scroll = QScrollArea(self)
+        self.itemData_scroll.setMinimumSize(450, 300)
+        self.itemData_scroll.move(25, 170)
+        self.itemData_scroll.setWidgetResizable(True)
+        self.itemData_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.itemData_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.itemData_scroll.show()
+
+        self.scrollable_widget = QWidget()
+        self.scrollable_widget.setMinimumSize(450, 300)
+        self.content : QVBoxLayout = QVBoxLayout(self.scrollable_widget)
+
+        self.itemData_scroll.setWidget(self.scrollable_widget)
 
         self.itemValues_ledits: list[QLineEdit]
         self.itemWeights_ledits: list[QLineEdit]
         self.removeitem_buttons: list[QPushButton]
 
+        self.addItem_button = QPushButton(self.scrollable_widget)
+        self.addItem_button.setFixedSize(40, 40)
+        self.addItem_button.move(375, 10)
+        self.addItem_button.setText('+')
+        self.addItem_button.clicked.connect(self.addItem)
+        self.addItem_button.show()
+
         self.addItem()
+        # self.addItem()
+        # self.addItem()
+        # self.addItem()
+        # self.addItem()
+        # self.addItem()
+        # self.addItem()
+        # self.addItem()
+
 
     def setupItems(self) -> None:
         current: int = len(self.itemWeights_ledits)
@@ -122,48 +148,56 @@ class generatorApp(QMainWindow):
 
         # przesunięcie niższych itemów w górę
         for i in range(len(self.itemValues_ledits)):
-            self.itemValues_ledits[i].move(75, 170 + 50 * i)
+            self.itemValues_ledits[i].move(25, 10 + 50 * i)
 
         for i in range(len(self.itemWeights_ledits)):
-            self.itemWeights_ledits[i].move(275, 170 + 50 * i)
+            self.itemWeights_ledits[i].move(200, 10 + 50 * i)
 
         for i in range(len(self.removeitem_buttons)):
-            self.removeitem_buttons[i].move(450, 170 + 50 * i)
+            self.removeitem_buttons[i].move(375, 10 + 50 * i)
 
-        self.addItem_button.move(450, 170 + 50 * len(self.itemValues_ledits))
+        self.addItem_button.move(375, 10 + 50 * len(self.itemValues_ledits))
+
+        if len(self.removeitem_buttons) < 5:
+            self.scrollable_widget.setMinimumSize(450, 300)
+        else:
+            self.scrollable_widget.setMinimumSize(450, 50 * (len(self.removeitem_buttons) + 1))
 
     def removeItemSlot(self, ) -> None:
         self.removeItem(self.removeitem_buttons.index(self.sender()))
 
     def addItem(self) -> None:
-        self.itemValues_ledits.append(QLineEdit(self))
+        self.itemValues_ledits.append(QLineEdit(self.scrollable_widget))
         self.itemValues_ledits[-1].setFixedSize(150, 40)
-        self.itemValues_ledits[-1].move(75, 120 + 50 * len(self.itemValues_ledits))
+        self.itemValues_ledits[-1].move(25, 50 * len(self.itemValues_ledits) - 40)
         self.itemValues_ledits[-1].setText('0,0')
         self.itemValues_ledits[-1].setValidator(QDoubleValidator(0.0, sys.float_info.max, 16))
         self.itemValues_ledits[-1].textEdited.connect(self.valueEditedSlot)
         self.itemValues_ledits[-1].show()
 
-        self.itemWeights_ledits.append(QLineEdit(self))
+        self.itemWeights_ledits.append(QLineEdit(self.scrollable_widget))
         self.itemWeights_ledits[-1].setFixedSize(150, 40)
-        self.itemWeights_ledits[-1].move(275, 120 + 50 * len(self.itemValues_ledits))
+        self.itemWeights_ledits[-1].move(200, 50 * len(self.itemWeights_ledits) - 40)
         self.itemWeights_ledits[-1].setText('0,0')
         self.itemWeights_ledits[-1].setValidator(QDoubleValidator(0.0, sys.float_info.max, 16))
         self.itemWeights_ledits[-1].textEdited.connect(self.weightEditedSlot)
         self.itemWeights_ledits[-1].show()
 
-        self.removeitem_buttons.append(QPushButton(self))
+        self.removeitem_buttons.append(QPushButton(self.scrollable_widget))
         self.removeitem_buttons[-1].setFixedSize(40, 40)
-        self.removeitem_buttons[-1].move(450, 120 + 50 * len(self.removeitem_buttons))
+        self.removeitem_buttons[-1].move(375, 50 * len(self.removeitem_buttons) - 40)
         self.removeitem_buttons[-1].setText('-')
         self.removeitem_buttons[-1].clicked.connect(self.removeItemSlot)
         self.removeitem_buttons[-1].show()
 
         self.items.append([0.0, 0.0])
 
-        self.addItem_button.move(450, 170 + 50 * len(self.itemValues_ledits))
+        if len(self.removeitem_buttons) >= 5:
+            self.scrollable_widget.setMinimumSize(450, 50 * (len(self.removeitem_buttons) + 1))
 
-        # co jak nie ma miejsca
+        self.addItem_button.move(375, 10 + 50 * len(self.itemValues_ledits))
+
+        self.itemData_scroll.verticalScrollBar().setValue(self.itemData_scroll.verticalScrollBar().value() + 50)
 
     def capacityEdited(self, text: str) -> None:
         self.capacity = float(text.replace(',', '.'))
@@ -224,8 +258,8 @@ class generatorApp(QMainWindow):
         sumWeight: float = 0.0
 
         for i, item in enumerate(self.items):
-            item[0] = expovariate(1.0)
-            weight : float = expovariate(1.0)
+            item[0] = expovariate(0.5)
+            weight : float = expovariate(0.5)
             item[1] = weight
 
             if weight < minWeight:
