@@ -217,6 +217,10 @@ class generatorApp(QMainWindow):
             with open(openFilePath, 'r', encoding='utf-8') as file:
                 data: dict = json.load(file)
 
+                if data['capacity'] < 0.0:
+                    print(f'Negative capacity', file=sys.stderr)
+                    return
+
                 for v, w in data['items']:
                     if float(v) < 0.0:
                         print(f'Data contains item with negative value: ({v}, {w})', file=sys.stderr)

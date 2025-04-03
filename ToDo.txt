@@ -1,8 +1,6 @@
 main'ów nie zmieniać
-edytujemy tylko solverApp i inne pliki solvera (pewnie trzeba będzie zrobić solverLogic)
+edytujemy tylko solverApp solverLogic
 
 solver:
-* czytanie z pliku (z walidacją wejścia)
-* wybór algorytmu
-* rozwiązywanie
+* rozwiązywanie (precise i greedy)
 * prezentacja wyników
