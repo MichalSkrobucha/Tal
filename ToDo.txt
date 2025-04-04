@@ -2,5 +2,4 @@ main'ów nie zmieniać
 edytujemy tylko solverApp solverLogic
 
 solver:
-* rozwiązywanie (precise i greedy)
-* prezentacja wyników
+*
