@@ -1,8 +1,10 @@
 import json
 import sys
+from typing import Callable
 
-from PyQt6.QtWidgets import QMainWindow, QPushButton, QFileDialog, QGroupBox, QRadioButton, QLabel, QGridLayout, \
-    QHBoxLayout
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QMainWindow, QPushButton, QFileDialog, QRadioButton, QLabel, QScrollArea, QWidget, \
+    QVBoxLayout
 
 from solver.solverLogic import solverLogic
 
@@ -15,12 +17,17 @@ class solverApp(QMainWindow):
 
         # self.capacity: float = 0.0
         # self.items: list[list[float]] = []  # [value, weight]
-        self.algorithm : int = 0 # 0-precise, 1-greedy
+        self.algorithm: Callable[[], (float, list[list[float]])] = self.logic.precise
 
         self.readFile_button: QPushButton
-        self.solve_button : QPushButton
-        self.precise_radio : QRadioButton
-        self.greedy_radio : QRadioButton
+        self.solve_button: QPushButton
+        self.precise_radio: QRadioButton
+        self.greedy_radio: QRadioButton
+        self.chosen_label: QLabel
+        self.chosenItems_scroll: QScrollArea
+        self.scrollable_widget: QWidget
+        self.content: QVBoxLayout
+        self.chosenItems_labels : list[QLabel] = []
 
         self.initUI()
 
@@ -65,29 +72,65 @@ class solverApp(QMainWindow):
         self.greedy_radio.clicked.connect(self.greedyClicked)
         self.greedy_radio.show()
 
+        self.chosen_label = QLabel(self)
+        self.chosen_label.setFixedSize(400, 40)
+        self.chosen_label.move(75, 125)
+        self.chosen_label.setText('Current items (value, weight)')
+        self.chosen_label.show()
+
+        self.chosenItems_scroll = QScrollArea(self)
+        self.chosenItems_scroll.setMinimumSize(450, 300)
+        self.chosenItems_scroll.move(25, 175)
+        self.chosenItems_scroll.setWidgetResizable(True)
+        self.chosenItems_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.chosenItems_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.chosenItems_scroll.show()
+
+        self.scrollable_widget = QWidget()
+        self.scrollable_widget.setMinimumSize(450, 300)
+        self.content = QVBoxLayout(self.scrollable_widget)
+
+        self.chosenItems_scroll.setWidget(self.scrollable_widget)
 
     def solve(self) -> None:
-        value : float = 0.0
-        chosen : list[list[float]] = []
+        value: float
+        chosen: list[list[float]]
 
-        match self.algorithm:
-            case 0:
-                self.precise_radio.setEnabled(False)
-                self.greedy_radio.setEnabled(False)
+        self.precise_radio.setEnabled(False)
+        self.greedy_radio.setEnabled(False)
 
-                value, chosen = self.logic.precise()
-
-            case 1:
-                self.precise_radio.setEnabled(False)
-                self.greedy_radio.setEnabled(False)
-
-                value, chosen = self.logic.greedy()
-
-            case _:
-                pass
+        value, chosen = self.algorithm()
 
         self.precise_radio.setEnabled(True)
         self.greedy_radio.setEnabled(True)
+
+        self.removeItems()
+        self.addItems(chosen)
+
+        self.chosen_label.setText(f'Chosen items (value, weight) \t Computed value: {value}')
+
+    def removeItems(self) -> None:
+        # removing old items
+        current: QLabel
+
+        for _ in range(len(self.chosenItems_labels)):
+            current = self.chosenItems_labels[0]
+            del self.chosenItems_labels[0]
+            current.deleteLater()
+
+    def addItems(self, items : list[list[float]]) -> None:
+        for v, w in items:
+            current = QLabel(self.scrollable_widget)
+            current.setFixedSize(150, 40)
+            current.move(25, 50 * len(self.chosenItems_labels) + 10)
+            current.setText(f'({v} ; {w})')
+            current.show()
+            self.chosenItems_labels.append(current)
+
+        if len(self.chosenItems_labels) >= 6:
+            self.scrollable_widget.setMinimumSize(450, 50 * len(self.chosenItems_labels))
+        else:
+            self.scrollable_widget.setMinimumSize(450, 300)
 
     def readFile(self) -> None:
         openFilePath: str = QFileDialog.getOpenFileName(self, 'Open File', './', '.json (*.json) ;; .* (*.*)')[0]
@@ -115,16 +158,22 @@ class solverApp(QMainWindow):
                 # self.items = data['items']
 
                 self.logic.loadData(data['capacity'], data['items'])
+
+                self.removeItems()
+                self.addItems(data['items'])
+
+                self.chosen_label.setText(f'Current items (value, weight) \t Capacity {data["capacity"]}')
+
         else:
             print('Something went wrong', file=sys.stderr)
             return
 
         self.solve_button.setEnabled(True)
 
-    def preciseClicked(self, clicked : bool) -> None:
+    def preciseClicked(self, clicked: bool) -> None:
         if clicked:
-            self.algorithm = 0
+            self.algorithm = self.logic.precise
 
-    def greedyClicked(self, clicked : bool) -> None:
+    def greedyClicked(self, clicked: bool) -> None:
         if clicked:
-            self.algorithm = 1
+            self.algorithm = self.logic.greedy

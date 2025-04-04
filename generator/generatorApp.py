@@ -3,9 +3,8 @@ import sys
 from random import expovariate, normalvariate
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QDoubleValidator, QScrollEvent
-from PyQt6.QtWidgets import QMainWindow, QPushButton, QLabel, QLineEdit, QFileDialog, QScrollArea, QWidget, QVBoxLayout, \
-    QSizePolicy
+from PyQt6.QtGui import QDoubleValidator
+from PyQt6.QtWidgets import QMainWindow, QPushButton, QLabel, QLineEdit, QFileDialog, QScrollArea, QWidget, QVBoxLayout
 
 
 class generatorApp(QMainWindow):
@@ -22,8 +21,9 @@ class generatorApp(QMainWindow):
         self.backpackCapacity_ledit: QLineEdit
         self.itemValue_label: QLabel
         self.itemWeight_label: QLabel
-        self.itemData_scroll : QScrollArea
-        self.scrollable_widget : QWidget
+        self.itemData_scroll: QScrollArea
+        self.scrollable_widget: QWidget
+        self.content: QVBoxLayout
         self.itemValues_ledits: list[QLineEdit] = []
         self.itemWeights_ledits: list[QLineEdit] = []
         self.removeitem_buttons: list[QPushButton] = []
@@ -93,7 +93,7 @@ class generatorApp(QMainWindow):
 
         self.scrollable_widget = QWidget()
         self.scrollable_widget.setMinimumSize(450, 300)
-        self.content : QVBoxLayout = QVBoxLayout(self.scrollable_widget)
+        self.content = QVBoxLayout(self.scrollable_widget)
 
         self.itemData_scroll.setWidget(self.scrollable_widget)
 
@@ -116,7 +116,6 @@ class generatorApp(QMainWindow):
         # self.addItem()
         # self.addItem()
         # self.addItem()
-
 
     def setupItems(self) -> None:
         current: int = len(self.itemWeights_ledits)
@@ -258,12 +257,12 @@ class generatorApp(QMainWindow):
             return
 
     def randomize(self) -> None:
-        minWeight : float = sys.float_info.max
+        minWeight: float = sys.float_info.max
         sumWeight: float = 0.0
 
         for i, item in enumerate(self.items):
             item[0] = expovariate(0.5).__round__(3)
-            weight : float = expovariate(0.5).__round__(3)
+            weight: float = expovariate(0.5).__round__(3)
             item[1] = weight
 
             if weight < minWeight:
@@ -274,11 +273,9 @@ class generatorApp(QMainWindow):
             self.itemValues_ledits[i].setText(f'{item[0]:.3f}')
             self.itemWeights_ledits[i].setText(f'{item[1]:.3f}')
 
-
         self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6).__round__(3)
 
         while self.capacity < 0.0:
             self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6)
 
         self.backpackCapacity_ledit.setText(f'{self.capacity:.3f}')
-
