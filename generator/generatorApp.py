@@ -109,21 +109,16 @@ class generatorApp(QMainWindow):
         self.addItem_button.show()
 
         self.addItem()
-        # self.addItem()
-        # self.addItem()
-        # self.addItem()
-        # self.addItem()
-        # self.addItem()
-        # self.addItem()
-        # self.addItem()
 
     def setupItems(self) -> None:
         current: int = len(self.itemWeights_ledits)
         toBe: int = len(self.items)
 
+        print(len(self.items), len(self.itemWeights_ledits))
+
         if toBe >= current:
             for _ in range(toBe - current):
-                self.addItem()
+                self.addLedit()
         else:
             pass
             for _ in range(current - toBe):
@@ -132,6 +127,8 @@ class generatorApp(QMainWindow):
         for i in range(toBe):
             self.itemValues_ledits[i].setText(str(self.items[i][0]))
             self.itemWeights_ledits[i].setText(str(self.items[i][1]))
+
+        print(len(self.items), len(self.itemWeights_ledits))
 
     def removeItem(self, id: int) -> None:
         # usunięcie itemu (value, weight, removeButton) o wskazanym id
@@ -162,10 +159,17 @@ class generatorApp(QMainWindow):
         else:
             self.scrollable_widget.setMinimumSize(450, 50 * (len(self.removeitem_buttons) + 1))
 
+        del self.items[id]
+
     def removeItemSlot(self, ) -> None:
         self.removeItem(self.removeitem_buttons.index(self.sender()))
 
     def addItem(self) -> None:
+        self.addLedit()
+
+        self.items.append([0.0, 0.0])
+
+    def addLedit(self) -> None:
         self.itemValues_ledits.append(QLineEdit(self.scrollable_widget))
         self.itemValues_ledits[-1].setFixedSize(150, 40)
         self.itemValues_ledits[-1].move(25, 50 * len(self.itemValues_ledits) - 40)
@@ -188,8 +192,6 @@ class generatorApp(QMainWindow):
         self.removeitem_buttons[-1].setText('-')
         self.removeitem_buttons[-1].clicked.connect(self.removeItemSlot)
         self.removeitem_buttons[-1].show()
-
-        self.items.append([0.0, 0.0])
 
         if len(self.removeitem_buttons) >= 5:
             self.scrollable_widget.setMinimumSize(450, 50 * (len(self.removeitem_buttons) + 1))
@@ -234,8 +236,6 @@ class generatorApp(QMainWindow):
                 self.capacity = data['capacity']
                 self.items = data['items']
 
-                print(self.items)
-
                 self.backpackCapacity_ledit.setText(str(self.capacity))
                 self.setupItems()
         else:
@@ -273,9 +273,10 @@ class generatorApp(QMainWindow):
             self.itemValues_ledits[i].setText(f'{item[0]:.3f}')
             self.itemWeights_ledits[i].setText(f'{item[1]:.3f}')
 
+
         self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6).__round__(3)
 
         while self.capacity < 0.0:
-            self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6)
+            self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6).__round__(3)
 
         self.backpackCapacity_ledit.setText(f'{self.capacity:.3f}')

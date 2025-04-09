@@ -3,7 +3,7 @@ from generator.generatorApp import generatorApp
 from PyQt6.QtWidgets import QApplication
 
 
-def main():
+def main() -> None:
     app : QApplication = QApplication(sys.argv)
     generator : generatorApp = generatorApp()
     generator.show()

@@ -2,4 +2,7 @@ main'ów nie zmieniać
 edytujemy tylko solverApp solverLogic
 
 solver:
-*
+* docstringi
+
+generator
+* docstringi

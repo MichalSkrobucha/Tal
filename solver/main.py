@@ -3,7 +3,7 @@ from solver.solverApp import solverApp
 from PyQt6.QtWidgets import QApplication
 
 
-def main():
+def main() -> None:
     app : QApplication = QApplication(sys.argv)
     solver : solverApp = solverApp()
     solver.show()

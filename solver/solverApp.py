@@ -15,8 +15,6 @@ class solverApp(QMainWindow):
 
         self.logic = solverLogic()
 
-        # self.capacity: float = 0.0
-        # self.items: list[list[float]] = []  # [value, weight]
         self.algorithm: Callable[[], (float, list[list[float]])] = self.logic.precise
 
         self.readFile_button: QPushButton
@@ -153,9 +151,6 @@ class solverApp(QMainWindow):
                             f'Data contains item with negative weight: ({v}, {w})',
                             file=sys.stderr)
                         return
-
-                # self.capacity = data['capacity']
-                # self.items = data['items']
 
                 self.logic.loadData(data['capacity'], data['items'])
 
