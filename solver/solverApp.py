@@ -10,8 +10,10 @@ from solver.solverLogic import solverLogic
 
 
 class solverApp(QMainWindow):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
+
+        self.items : list[list[float]] = [] #value, weight
 
         self.logic = solverLogic()
 
@@ -21,6 +23,7 @@ class solverApp(QMainWindow):
         self.solve_button: QPushButton
         self.precise_radio: QRadioButton
         self.greedy_radio: QRadioButton
+        self.dynamic_radio: QRadioButton
         self.chosen_label: QLabel
         self.chosenItems_scroll: QScrollArea
         self.scrollable_widget: QWidget
@@ -57,7 +60,7 @@ class solverApp(QMainWindow):
 
         self.precise_radio = QRadioButton(self)
         self.precise_radio.setFixedSize(75, 35)
-        self.precise_radio.move(225, 75)
+        self.precise_radio.move(200, 75)
         self.precise_radio.setText('Precise')
         self.precise_radio.clicked.connect(self.preciseClicked)
         self.precise_radio.setChecked(True)
@@ -65,10 +68,18 @@ class solverApp(QMainWindow):
 
         self.greedy_radio = QRadioButton(self)
         self.greedy_radio.setFixedSize(75, 35)
-        self.greedy_radio.move(325, 75)
+        self.greedy_radio.move(275, 75)
         self.greedy_radio.setText('Greedy')
         self.greedy_radio.clicked.connect(self.greedyClicked)
         self.greedy_radio.show()
+
+        self.dynamic_radio = QRadioButton(self)
+        self.dynamic_radio.setFixedSize(75, 35)
+        self.dynamic_radio.move(350, 75)
+        self.dynamic_radio.setText('Dynamic')
+        self.dynamic_radio.clicked.connect(self.dynamicClicked)
+        self.dynamic_radio.show()
+
 
         self.chosen_label = QLabel(self)
         self.chosen_label.setFixedSize(400, 40)
@@ -92,12 +103,13 @@ class solverApp(QMainWindow):
 
     def solve(self) -> None:
         value: float
-        chosen: list[list[float]]
+        ids: list[int]
 
         self.precise_radio.setEnabled(False)
         self.greedy_radio.setEnabled(False)
 
-        value, chosen = self.algorithm()
+        value, ids = self.algorithm()
+        chosen : list[list[float]] = [self.items[i] for i in ids]
 
         self.precise_radio.setEnabled(True)
         self.greedy_radio.setEnabled(True)
@@ -152,6 +164,7 @@ class solverApp(QMainWindow):
                             file=sys.stderr)
                         return
 
+                self.items = data['items']
                 self.logic.loadData(data['capacity'], data['items'])
 
                 self.removeItems()
@@ -172,3 +185,7 @@ class solverApp(QMainWindow):
     def greedyClicked(self, clicked: bool) -> None:
         if clicked:
             self.algorithm = self.logic.greedy
+
+    def dynamicClicked(self, clicked: bool) -> None:
+        if clicked:
+            self.algorithm = self.logic.dynamic

@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QMainWindow, QPushButton, QLabel, QLineEdit, QFileDi
 
 
 class generatorApp(QMainWindow):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.capacity: float = 0.0
