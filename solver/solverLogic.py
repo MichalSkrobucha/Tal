@@ -87,19 +87,25 @@ class solverLogic:
     def dynamic(self) -> (float, list[int]):
         capacity : int = math.floor(self.capacity)
         items: list[list[float | int]] = [[v, math.ceil(w)] for v, w in self.items]
+        scale : int = math.gcd(*[w for _, w in items])
+
+        if scale > 1:
+            capacity //= scale
+            for t in items:
+                t[1] //= scale
+
         n : int = len(items)
 
-        # maksymalna pojemność
+        # maksymalna wartość dla pojemności i odpowiednie przedmioty
         dp  : list[float] = [0.0] * (capacity + 1)
         chosen = [[] for _ in range(capacity + 1)]
 
         for i in range(n):
             v, w = items[i]
-            # Iterujemy od tyłu, aby nie nadpisać wyników z poprzedniego kroku (0/1 knapsack)
+            # od tyłu - nie nadpisujemy wyników z poprzedniego kroku
             for c in range(capacity, w - 1, -1):
                 if dp[c - w] + v > dp[c]:
                     dp[c] = dp[c - w] + v
                     chosen[c] = chosen[c - w] + [i]
-
 
         return dp[capacity], chosen[capacity]

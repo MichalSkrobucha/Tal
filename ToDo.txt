@@ -1,8 +1,9 @@
 main'ów nie zmieniać
-edytujemy tylko solverApp solverLogic
+edytujemy tylko generatorApp, solverApp, solverLogic
+w zasadzie można bez docstringów
 
 solver:
-* docstringi
+*
 
 generator
-* docstringi
+*
