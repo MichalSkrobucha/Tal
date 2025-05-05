@@ -4,6 +4,8 @@ from itertools import combinations
 
 class solverLogic:
     def __init__(self):
+        self.epsilon : float = 0.500
+
         self.capacity: float = 0.0
         self.items: list[list[float]] = []  # [value, weight]
 
@@ -11,7 +13,7 @@ class solverLogic:
         self.capacity = capacity
         self.items = items
 
-    def precise(self) -> (float, list[int]):
+    def brute(self) -> list[int]:
         weightWasOKinAtLeastOne: bool = True
         maxValue: float = 0.0
         chosen: list[int] = []
@@ -54,9 +56,9 @@ class solverLogic:
                     pass
                     # print(f'Not enough backpack capacity')
 
-        return maxValue, chosen
+        return chosen
 
-    def greedy(self) -> (float, list[int]):
+    def greedy(self) -> list[int]:
         value: float = 0.0
         weight: float = 0.0
         densities: list[list[int | float]] = sorted([[i, v, w, v / w] for i, (v, w) in enumerate(self.items)], key=lambda x: x[3], reverse=True)
@@ -79,16 +81,13 @@ class solverLogic:
                 pass
                 # print(f'Item ({v, w, d}) won\'t fit in backpack')
 
-        return value, chosen
+        return chosen
 
-    def fptas(self) -> (float, list[int]):
-        pass
-
-    def dynamic(self) -> (float, list[int]):
+    def dynamic(self) -> list[int]:
         capacity : int = math.floor(self.capacity)
         items: list[list[float | int]] = [[v, math.ceil(w)] for v, w in self.items]
-        scale : int = math.gcd(*[w for _, w in items])
 
+        scale : int = math.gcd(*[w for _, w in items])
         if scale > 1:
             capacity //= scale
             for t in items:
@@ -108,4 +107,19 @@ class solverLogic:
                     dp[c] = dp[c - w] + v
                     chosen[c] = chosen[c - w] + [i]
 
-        return dp[capacity], chosen[capacity]
+        return chosen[capacity]
+
+    def fptas(self) -> list[int]:
+        items: list[list[float]] = [[v, w] for v, w in self.items]
+
+        maxValue: float = max(*[w for _, w in self.items])
+        K: float = self.epsilon * maxValue / len(items)
+        newItems: list[list[int]] = [[float(math.floor(v / K)), math.ceil(w)] for v,w in items]
+
+        chosen: list[int]
+
+        self.items = newItems
+        chosen = self.dynamic()
+        self.items = items
+
+        return chosen

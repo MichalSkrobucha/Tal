@@ -2,9 +2,11 @@ import json
 import sys
 from typing import Callable
 
+from PyQt6 import QtCore
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QMainWindow, QPushButton, QFileDialog, QRadioButton, QLabel, QScrollArea, QWidget, \
-    QVBoxLayout
+    QVBoxLayout, QSlider, QLineEdit
 
 from solver.solverLogic import solverLogic
 
@@ -17,13 +19,16 @@ class solverApp(QMainWindow):
 
         self.logic = solverLogic()
 
-        self.algorithm: Callable[[], (float, list[list[float]])] = self.logic.precise
+        self.algorithm: Callable[[], list[int]] = self.logic.brute
 
         self.readFile_button: QPushButton
         self.solve_button: QPushButton
-        self.precise_radio: QRadioButton
+        self.brute_radio: QRadioButton
         self.greedy_radio: QRadioButton
         self.dynamic_radio: QRadioButton
+        self.fptas_radio: QRadioButton
+        self.epsilon_slider : QSlider
+        self.epsilon_ledit : QLineEdit
         self.chosen_label: QLabel
         self.chosenItems_scroll: QScrollArea
         self.scrollable_widget: QWidget
@@ -58,13 +63,13 @@ class solverApp(QMainWindow):
         self.chooseAlgorithm_label.setText('Choose algorithm:')
         self.chooseAlgorithm_label.show()
 
-        self.precise_radio = QRadioButton(self)
-        self.precise_radio.setFixedSize(75, 35)
-        self.precise_radio.move(200, 75)
-        self.precise_radio.setText('Precise')
-        self.precise_radio.clicked.connect(self.preciseClicked)
-        self.precise_radio.setChecked(True)
-        self.precise_radio.show()
+        self.brute_radio = QRadioButton(self)
+        self.brute_radio.setFixedSize(90, 35)
+        self.brute_radio.move(185, 75)
+        self.brute_radio.setText('Brute force')
+        self.brute_radio.clicked.connect(self.bruteClicked)
+        self.brute_radio.setChecked(True)
+        self.brute_radio.show()
 
         self.greedy_radio = QRadioButton(self)
         self.greedy_radio.setFixedSize(75, 35)
@@ -80,10 +85,42 @@ class solverApp(QMainWindow):
         self.dynamic_radio.clicked.connect(self.dynamicClicked)
         self.dynamic_radio.show()
 
+        self.fptas_radio = QRadioButton(self)
+        self.fptas_radio.setFixedSize(75, 35)
+        self.fptas_radio.move(425, 75)
+        self.fptas_radio.setText('FPTAS')
+        self.fptas_radio.clicked.connect(self.fptasClicked)
+        self.fptas_radio.show()
+
+        self.epsilon_title = QLabel(self)
+        self.epsilon_title.setFixedSize(50, 20)
+        self.epsilon_title.move(25, 110)
+        self.epsilon_title.setText('Epsilon')
+        self.epsilon_title.show()
+
+        self.epsilon_slider = QSlider(QtCore.Qt.Orientation.Horizontal, self)
+        self.epsilon_slider.setFixedSize(300, 20)
+        self.epsilon_slider.move(75, 110)
+        self.epsilon_slider.setMinimum(0)
+        self.epsilon_slider.setMaximum(1000)
+        self.epsilon_slider.setTickInterval(1)
+        self.epsilon_slider.setValue(500)
+        self.epsilon_slider.sliderMoved.connect(self.epsilonMoved)
+        self.epsilon_slider.show()
+        self.epsilon_slider.setEnabled(False)
+
+        self.epsilon_ledit = QLineEdit(self)
+        self.epsilon_ledit.setFixedSize(50, 20)
+        self.epsilon_ledit.move(400, 110)
+        self.epsilon_ledit.setValidator(QDoubleValidator(0.000, 1.000, 3))
+        self.epsilon_ledit.setText('0.500')
+        self.epsilon_ledit.textEdited.connect(self.epsilonEdited)
+        self.epsilon_ledit.show()
+        self.epsilon_ledit.setEnabled(False)
 
         self.chosen_label = QLabel(self)
         self.chosen_label.setFixedSize(400, 40)
-        self.chosen_label.move(75, 125)
+        self.chosen_label.move(75, 130)
         self.chosen_label.setText('Current items (value, weight)')
         self.chosen_label.show()
 
@@ -102,17 +139,18 @@ class solverApp(QMainWindow):
         self.chosenItems_scroll.setWidget(self.scrollable_widget)
 
     def solve(self) -> None:
-        value: float
-        ids: list[int]
-
-        self.precise_radio.setEnabled(False)
+        self.brute_radio.setEnabled(False)
         self.greedy_radio.setEnabled(False)
+        self.dynamic_radio.setEnabled(False)
+        self.solve_button.setEnabled(False)
 
-        value, ids = self.algorithm()
-        chosen : list[list[float]] = [self.items[i] for i in ids]
+        chosen : list[list[float]] = [self.items[i] for i in self.algorithm()]
+        value : float = sum([v for v, _ in chosen])
 
-        self.precise_radio.setEnabled(True)
+        self.brute_radio.setEnabled(True)
         self.greedy_radio.setEnabled(True)
+        self.dynamic_radio.setEnabled(True)
+        self.solve_button.setEnabled(True)
 
         self.removeItems()
         self.addItems(chosen)
@@ -178,14 +216,39 @@ class solverApp(QMainWindow):
 
         self.solve_button.setEnabled(True)
 
-    def preciseClicked(self, clicked: bool) -> None:
+    def bruteClicked(self, clicked: bool) -> None:
         if clicked:
-            self.algorithm = self.logic.precise
+            self.algorithm = self.logic.brute
+
+        self.epsilon_slider.setEnabled(False)
+        self.epsilon_ledit.setEnabled(False)
+
 
     def greedyClicked(self, clicked: bool) -> None:
         if clicked:
             self.algorithm = self.logic.greedy
 
+        self.epsilon_slider.setEnabled(False)
+        self.epsilon_ledit.setEnabled(False)
+
     def dynamicClicked(self, clicked: bool) -> None:
         if clicked:
             self.algorithm = self.logic.dynamic
+
+        self.epsilon_slider.setEnabled(False)
+        self.epsilon_ledit.setEnabled(False)
+
+    def fptasClicked(self, clicked: bool) -> None:
+        if clicked:
+            self.algorithm = self.logic.fptas
+
+        self.epsilon_slider.setEnabled(True)
+        self.epsilon_ledit.setEnabled(True)
+
+    def epsilonMoved(self, ticks : int):
+        self.epsilon_ledit.setText(str(ticks / 1000))
+        self.logic.epsilon = ticks / 1000
+
+    def epsilonEdited(self, newStr : str):
+        self.epsilon_slider.setValue(int(1000 * float(newStr)))
+        self.logic.epsilon = float(newStr)
