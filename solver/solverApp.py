@@ -106,6 +106,7 @@ class solverApp(QMainWindow):
         self.epsilon_slider.setTickInterval(1)
         self.epsilon_slider.setValue(500)
         self.epsilon_slider.sliderMoved.connect(self.epsilonMoved)
+        self.epsilon_slider.sliderPressed.connect(self.epsilonPressed)
         self.epsilon_slider.show()
         self.epsilon_slider.setEnabled(False)
 
@@ -245,10 +246,16 @@ class solverApp(QMainWindow):
         self.epsilon_slider.setEnabled(True)
         self.epsilon_ledit.setEnabled(True)
 
-    def epsilonMoved(self, ticks : int):
+    def epsilonMoved(self, ticks : int) -> None:
         self.epsilon_ledit.setText(str(ticks / 1000))
         self.logic.epsilon = ticks / 1000
 
-    def epsilonEdited(self, newStr : str):
+    def epsilonPressed(self) -> None:
+        self.epsilon_ledit.setText(str(self.epsilon_slider.value() / 1000))
+        self.logic.epsilon = self.epsilon_slider.value() / 1000
+
+    def epsilonEdited(self, newStr : str) -> None:
         self.epsilon_slider.setValue(int(1000 * float(newStr)))
         self.logic.epsilon = float(newStr)
+
+
