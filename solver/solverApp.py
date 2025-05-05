@@ -246,13 +246,22 @@ class solverApp(QMainWindow):
         self.epsilon_ledit.setEnabled(True)
 
     def epsilonMoved(self, ticks: int) -> None:
+        if ticks == 0:
+            ticks = 1
+            self.epsilon_slider.setValue(1)
         self.epsilon_ledit.setText(str(ticks / 1000))
         self.logic.epsilon = ticks / 1000
 
     def epsilonPressed(self) -> None:
+        if self.epsilon_slider.value() == 0:
+            self.epsilon_slider.setValue(1)
         self.epsilon_ledit.setText(str(self.epsilon_slider.value() / 1000))
         self.logic.epsilon = self.epsilon_slider.value() / 1000
 
     def epsilonEdited(self, newStr: str) -> None:
+        if int(1000 * float(newStr)) == 0:
+            newStr = '0.001'
+            self.epsilon_ledit.setText('0.001')
+            print('Epsilon cannot be 0', file=sys.stderr)
         self.epsilon_slider.setValue(int(1000 * float(newStr)))
         self.logic.epsilon = float(newStr)
