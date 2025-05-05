@@ -4,7 +4,7 @@ from itertools import combinations
 
 class solverLogic:
     def __init__(self):
-        self.epsilon : float = 0.500
+        self.epsilon: float = 0.500
 
         self.capacity: float = 0.0
         self.items: list[list[float]] = []  # [value, weight]
@@ -41,7 +41,6 @@ class solverLogic:
                     value += self.items[i][0]
                     weight += self.items[i][1]
 
-
                 # print(f'Value {value}, weight {weight}')
 
                 if weight <= self.capacity:
@@ -61,7 +60,8 @@ class solverLogic:
     def greedy(self) -> list[int]:
         value: float = 0.0
         weight: float = 0.0
-        densities: list[list[int | float]] = sorted([[i, v, w, v / w] for i, (v, w) in enumerate(self.items)], key=lambda x: x[3], reverse=True)
+        densities: list[list[int | float]] = sorted([[i, v, w, v / w] for i, (v, w) in enumerate(self.items)],
+                                                    key=lambda x: x[3], reverse=True)
         chosen: list[int] = []
 
         # print('Greedy algorithm')
@@ -84,19 +84,19 @@ class solverLogic:
         return chosen
 
     def dynamic(self) -> list[int]:
-        capacity : int = math.floor(self.capacity)
+        capacity: int = math.floor(self.capacity)
         items: list[list[float | int]] = [[v, math.ceil(w)] for v, w in self.items]
 
-        scale : int = math.gcd(*[w for _, w in items])
+        scale: int = math.gcd(*[w for _, w in items])
         if scale > 1:
             capacity //= scale
             for t in items:
                 t[1] //= scale
 
-        n : int = len(items)
+        n: int = len(items)
 
         # maksymalna wartość dla pojemności i odpowiednie przedmioty
-        dp  : list[float] = [0.0] * (capacity + 1)
+        dp: list[float] = [0.0] * (capacity + 1)
         chosen = [[] for _ in range(capacity + 1)]
 
         for i in range(n):
@@ -114,7 +114,7 @@ class solverLogic:
 
         maxValue: float = max(*[w for _, w in self.items])
         K: float = self.epsilon * maxValue / len(items)
-        newItems: list[list[int]] = [[float(math.floor(v / K)), math.ceil(w)] for v,w in items]
+        newItems: list[list[int]] = [[float(math.floor(v / K)), math.ceil(w)] for v, w in items]
 
         chosen: list[int]
 

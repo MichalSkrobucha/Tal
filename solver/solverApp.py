@@ -15,7 +15,7 @@ class solverApp(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
 
-        self.items : list[list[float]] = [] #value, weight
+        self.items: list[list[float]] = []  # value, weight
 
         self.logic = solverLogic()
 
@@ -27,13 +27,13 @@ class solverApp(QMainWindow):
         self.greedy_radio: QRadioButton
         self.dynamic_radio: QRadioButton
         self.fptas_radio: QRadioButton
-        self.epsilon_slider : QSlider
-        self.epsilon_ledit : QLineEdit
+        self.epsilon_slider: QSlider
+        self.epsilon_ledit: QLineEdit
         self.chosen_label: QLabel
         self.chosenItems_scroll: QScrollArea
         self.scrollable_widget: QWidget
         self.content: QVBoxLayout
-        self.chosenItems_labels : list[QLabel] = []
+        self.chosenItems_labels: list[QLabel] = []
 
         self.initUI()
 
@@ -145,8 +145,8 @@ class solverApp(QMainWindow):
         self.dynamic_radio.setEnabled(False)
         self.solve_button.setEnabled(False)
 
-        chosen : list[list[float]] = [self.items[i] for i in self.algorithm()]
-        value : float = sum([v for v, _ in chosen])
+        chosen: list[list[float]] = [self.items[i] for i in self.algorithm()]
+        value: float = sum([v for v, _ in chosen])
 
         self.brute_radio.setEnabled(True)
         self.greedy_radio.setEnabled(True)
@@ -167,7 +167,7 @@ class solverApp(QMainWindow):
             del self.chosenItems_labels[0]
             current.deleteLater()
 
-    def addItems(self, items : list[list[float]]) -> None:
+    def addItems(self, items: list[list[float]]) -> None:
         for v, w in items:
             current = QLabel(self.scrollable_widget)
             current.setFixedSize(150, 40)
@@ -224,7 +224,6 @@ class solverApp(QMainWindow):
         self.epsilon_slider.setEnabled(False)
         self.epsilon_ledit.setEnabled(False)
 
-
     def greedyClicked(self, clicked: bool) -> None:
         if clicked:
             self.algorithm = self.logic.greedy
@@ -246,7 +245,7 @@ class solverApp(QMainWindow):
         self.epsilon_slider.setEnabled(True)
         self.epsilon_ledit.setEnabled(True)
 
-    def epsilonMoved(self, ticks : int) -> None:
+    def epsilonMoved(self, ticks: int) -> None:
         self.epsilon_ledit.setText(str(ticks / 1000))
         self.logic.epsilon = ticks / 1000
 
@@ -254,8 +253,6 @@ class solverApp(QMainWindow):
         self.epsilon_ledit.setText(str(self.epsilon_slider.value() / 1000))
         self.logic.epsilon = self.epsilon_slider.value() / 1000
 
-    def epsilonEdited(self, newStr : str) -> None:
+    def epsilonEdited(self, newStr: str) -> None:
         self.epsilon_slider.setValue(int(1000 * float(newStr)))
         self.logic.epsilon = float(newStr)
-
-

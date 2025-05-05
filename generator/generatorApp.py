@@ -66,7 +66,7 @@ class generatorApp(QMainWindow):
         self.backpackCapacity_ledit = QLineEdit(self)
         self.backpackCapacity_ledit.setFixedSize(150, 40)
         self.backpackCapacity_ledit.move(275, 70)
-        self.backpackCapacity_ledit.setText('0,0')
+        self.backpackCapacity_ledit.setText('0.0')
         self.backpackCapacity_ledit.setValidator(QDoubleValidator(0.0, sys.float_info.max, 16))
         self.backpackCapacity_ledit.textEdited.connect(self.capacityEdited)
         self.backpackCapacity_ledit.show()
@@ -173,7 +173,7 @@ class generatorApp(QMainWindow):
         self.itemValues_ledits.append(QLineEdit(self.scrollable_widget))
         self.itemValues_ledits[-1].setFixedSize(150, 40)
         self.itemValues_ledits[-1].move(25, 50 * len(self.itemValues_ledits) - 40)
-        self.itemValues_ledits[-1].setText('0,0')
+        self.itemValues_ledits[-1].setText('0.0')
         self.itemValues_ledits[-1].setValidator(QDoubleValidator(0.0, sys.float_info.max, 16))
         self.itemValues_ledits[-1].textEdited.connect(self.valueEditedSlot)
         self.itemValues_ledits[-1].show()
@@ -181,7 +181,7 @@ class generatorApp(QMainWindow):
         self.itemWeights_ledits.append(QLineEdit(self.scrollable_widget))
         self.itemWeights_ledits[-1].setFixedSize(150, 40)
         self.itemWeights_ledits[-1].move(200, 50 * len(self.itemWeights_ledits) - 40)
-        self.itemWeights_ledits[-1].setText('0,0')
+        self.itemWeights_ledits[-1].setText('0.0')
         self.itemWeights_ledits[-1].setValidator(QDoubleValidator(0.0, sys.float_info.max, 16))
         self.itemWeights_ledits[-1].textEdited.connect(self.weightEditedSlot)
         self.itemWeights_ledits[-1].show()
@@ -272,7 +272,6 @@ class generatorApp(QMainWindow):
 
             self.itemValues_ledits[i].setText(f'{item[0]:.3f}')
             self.itemWeights_ledits[i].setText(f'{item[1]:.3f}')
-
 
         self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6).__round__(3)
 
