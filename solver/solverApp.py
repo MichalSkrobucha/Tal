@@ -193,11 +193,11 @@ class solverApp(QMainWindow):
                     return
 
                 for v, w in data['items']:
-                    if float(v) < 0.0:
+                    if v < 0.0:
                         print(f'Data contains item with negative value: ({v}, {w})', file=sys.stderr)
                         return
 
-                    if float(w) < 0.0:
+                    if w < 0.0 or w > data['capacity']:
                         print(
                             f'Data contains item with negative weight: ({v}, {w})',
                             file=sys.stderr)

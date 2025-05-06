@@ -1,4 +1,5 @@
 import json
+import math
 import sys
 from random import expovariate, normalvariate
 
@@ -19,6 +20,7 @@ class generatorApp(QMainWindow):
         self.randomize_button: QPushButton
         self.backpackCapacity_label: QLabel
         self.backpackCapacity_ledit: QLineEdit
+        self.intigerfy_button : QPushButton
         self.itemValue_label: QLabel
         self.itemWeight_label: QLabel
         self.itemData_scroll: QScrollArea
@@ -70,6 +72,13 @@ class generatorApp(QMainWindow):
         self.backpackCapacity_ledit.setValidator(QDoubleValidator(0.0, sys.float_info.max, 16))
         self.backpackCapacity_ledit.textEdited.connect(self.capacityEdited)
         self.backpackCapacity_ledit.show()
+
+        self.intigerfy_button = QPushButton(self)
+        self.intigerfy_button.setFixedSize(25, 40)
+        self.intigerfy_button.move(450, 70)
+        self.intigerfy_button.setText('INT')
+        self.intigerfy_button.clicked.connect(self.intigerfy)
+        self.intigerfy_button.show()
 
         self.itemValue_label = QLabel(self)
         self.itemValue_label.setFixedSize(150, 40)
@@ -261,8 +270,8 @@ class generatorApp(QMainWindow):
         sumWeight: float = 0.0
 
         for i, item in enumerate(self.items):
-            item[0] = expovariate(0.5).__round__(3)
-            weight: float = expovariate(0.5).__round__(3)
+            item[0] = expovariate(0.25).__round__(3)
+            weight: float = expovariate(0.25).__round__(3)
             item[1] = weight
 
             if weight < minWeight:
@@ -279,3 +288,11 @@ class generatorApp(QMainWindow):
             self.capacity = normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6).__round__(3)
 
         self.backpackCapacity_ledit.setText(f'{self.capacity:.3f}')
+
+    def intigerfy(self):
+        self.capacity = math.floor(self.capacity)
+        self.backpackCapacity_ledit.setText(f'{self.capacity}')
+
+        for i, t in enumerate(self.items):
+            t[1] = math.ceil(t[1])
+            self.itemWeights_ledits[i].setText(f'{t[1]}')
