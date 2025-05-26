@@ -74,9 +74,9 @@ class generatorApp(QMainWindow):
         self.backpackCapacity_ledit.show()
 
         self.intigerfy_button = QPushButton(self)
-        self.intigerfy_button.setFixedSize(25, 40)
-        self.intigerfy_button.move(450, 70)
-        self.intigerfy_button.setText('INT')
+        self.intigerfy_button.setFixedSize(60, 40)
+        self.intigerfy_button.move(430, 70)
+        self.intigerfy_button.setText('Intigerfy')
         self.intigerfy_button.clicked.connect(self.intigerfy)
         self.intigerfy_button.show()
 

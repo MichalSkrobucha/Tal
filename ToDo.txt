@@ -4,7 +4,7 @@ edytujemy tylko generatorApp, solverApp, solverLogic
 w zasadzie można bez docstringów
 
 solver:
-*
+* co gdy przedmiot ma wagę większą niż pojemność
 
 generator
-* int/float/wybór (dla wag/pojemności // wartości) ?? (zmiany też w solverach!!)
+* co gdy przedmiot ma wagę większą niż pojemność

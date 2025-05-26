@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QApplication
 
 def main() -> None:
     app : QApplication = QApplication(sys.argv)
+    app.setStyle('Fusion')
     solver : solverApp = solverApp()
     solver.show()
 
