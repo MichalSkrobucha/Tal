@@ -2,7 +2,6 @@ import json
 import sys
 from typing import Callable
 
-from PyQt6 import QtCore
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QMainWindow, QPushButton, QFileDialog, QRadioButton, QLabel, QScrollArea, QWidget, \
@@ -98,7 +97,7 @@ class solverApp(QMainWindow):
         self.epsilon_title.setText('Epsilon')
         self.epsilon_title.show()
 
-        self.epsilon_slider = QSlider(QtCore.Qt.Orientation.Horizontal, self)
+        self.epsilon_slider = QSlider(Qt.Orientation.Horizontal, self)
         self.epsilon_slider.setFixedSize(300, 20)
         self.epsilon_slider.move(75, 110)
         self.epsilon_slider.setMinimum(0)

@@ -20,7 +20,7 @@ class generatorApp(QMainWindow):
         self.randomize_button: QPushButton
         self.backpackCapacity_label: QLabel
         self.backpackCapacity_ledit: QLineEdit
-        self.intigerfy_button : QPushButton
+        self.intigerfy_button: QPushButton
         self.itemValue_label: QLabel
         self.itemWeight_label: QLabel
         self.itemData_scroll: QScrollArea

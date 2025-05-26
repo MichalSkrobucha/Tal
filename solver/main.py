@@ -1,12 +1,14 @@
 import sys
-from solver.solverApp import solverApp
+
 from PyQt6.QtWidgets import QApplication
+
+from solver.solverApp import solverApp
 
 
 def main() -> None:
-    app : QApplication = QApplication(sys.argv)
+    app: QApplication = QApplication(sys.argv)
     app.setStyle('Fusion')
-    solver : solverApp = solverApp()
+    solver: solverApp = solverApp()
     solver.show()
 
     app.exec()
