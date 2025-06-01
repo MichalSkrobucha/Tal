@@ -1,4 +1,3 @@
-from time import time
 from typing import Callable
 
 from solver.solverLogic import solverLogic
@@ -19,13 +18,13 @@ def testAlgo(algo: int, capacity: int, data: list[list[float | int]]) -> None:
             print('Brute', end=' ')
             algorithm = logic.brute
         case 1:
-            print('Greedy')
+            print('Greedy', end=' ')
             algorithm = logic.greedy
         case 2:
-            print('Dynamic')
+            print('Dynamic', end=' ')
             algorithm = logic.dynamic
         case 3:
-            print('FPTAS')
+            print('FPTAS', end=' ')
             algorithm = logic.fptas
 
     logic.loadData(capacity, data)
@@ -42,11 +41,17 @@ def testAlgo(algo: int, capacity: int, data: list[list[float | int]]) -> None:
     print(f'value = {value} ; complexity : time = {complexity[0]}, memory = {complexity[1]}')
 
 
-def main() -> None:
-    capacity: int = 10
-    data: list[list[float | int]] = [[3.0, 5], [7.0, 4], [3.33, 11]]  # value, weight
-
+def testAllAlgos(capacity: int, data: list[list[float | int]]) -> None:
     testAlgo(BRUTE, capacity, data)
+    testAlgo(GREEDY, capacity, data)
+    testAlgo(DYNAMIC, capacity, data)
+    testAlgo(FPTAS, capacity, data)
+
+
+def main() -> None:
+    # data : [value, weight]
+
+    testAllAlgos(10, [[3.0, 5], [7.0, 4], [3.33, 11]])
 
 
 if __name__ == '__main__':

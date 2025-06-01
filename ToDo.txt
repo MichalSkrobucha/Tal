@@ -1,10 +1,4 @@
-main'ów nie zmieniać
-edytujemy tylko generatorApp, solverApp, solverLogic
-
-w zasadzie można bez docstringów
-
-solver:
-* co gdy przedmiot ma wagę większą niż pojemność
-
-generator
-* co gdy przedmiot ma wagę większą niż pojemność
+* oszacować złożoność i wrażliwość, czasowa i pamięciowa, pesymistyczna i oczekiwana
+* eksperymenty złożoności czasowych i pamięciowych -> wrażliwości
+* porówanie teorii i eksperymentów
+* wnioski
