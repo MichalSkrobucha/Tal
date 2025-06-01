@@ -30,16 +30,16 @@ def testAlgo(algo: int, capacity: int, data: list[list[float | int]]) -> None:
 
     logic.loadData(capacity, data)
 
-    print(f'n: {len(data)}')
+    print(f'n = {len(data)}')
 
     chosen: list[int]
     complexity: list[int]
 
     chosen, complexity = algorithm()
 
-    value: int = sum([data[i][0] for i in chosen])
+    value: float = sum([data[i][0] for i in chosen])
 
-    print(f'value : {value} ; complexity : time {complexity[0]}, memory {complexity[1]}')
+    print(f'value = {value} ; complexity : time = {complexity[0]}, memory = {complexity[1]}')
 
 
 def main() -> None:
