@@ -13,7 +13,10 @@ class solverLogic:
         self.capacity = capacity
         self.items = items
 
-    def brute(self) -> list[int]:
+    def brute(self) -> (list[int], list[int]):
+        time: int = 0
+        memory: int = 0
+
         weightWasOKinAtLeastOne: bool = True
         maxValue: float = 0.0
         chosen: list[int] = []
@@ -31,6 +34,9 @@ class solverLogic:
 
             subsets: list[tuple[int]] = combinations(ids, r)
 
+            if r > memory:
+                memory = r
+
             for s in subsets:
                 # print(f'Subset {s}')
 
@@ -40,6 +46,8 @@ class solverLogic:
                 for i in s:
                     value += self.items[i][0]
                     weight += self.items[i][1]
+
+                    time += 1
 
                 # print(f'Value {value}, weight {weight}')
 
@@ -55,13 +63,20 @@ class solverLogic:
                     pass
                     # print(f'Not enough backpack capacity')
 
-        return chosen
+        return chosen, [time, memory]
 
-    def greedy(self) -> list[int]:
+    def greedy(self) -> (list[int], list[int]):
+        time: int = 0
+        memory: int = 0
+
         value: float = 0.0
         weight: float = 0.0
         densities: list[list[int | float]] = sorted([[i, v, w, v / w] for i, (v, w) in enumerate(self.items)],
                                                     key=lambda x: x[3], reverse=True)
+
+        time += len(densities)
+        memory = len(densities)
+
         chosen: list[int] = []
 
         # print('Greedy algorithm')
@@ -75,17 +90,22 @@ class solverLogic:
                 chosen.append(i)
                 value += v
                 weight += w
+                time += 1
 
                 # print(f'Adding item ({v, w, d}), current value {value}, current weight {weight}')
             else:
                 pass
                 # print(f'Item ({v, w, d}) won\'t fit in backpack')
 
-        return chosen
+        return chosen, [time, memory]
 
-    def dynamic(self) -> list[int]:
+    def dynamic(self) -> (list[int], list[int]):
+        time: int = 0
+        memory: int = 0
+
         capacity: int = math.floor(self.capacity)
         items: list[list[float | int]] = [[v, math.ceil(w)] for v, w in self.items]
+        time += len(items)
 
         scale: int = math.gcd(*[w for _, w in items])
         if scale > 1:
@@ -106,20 +126,29 @@ class solverLogic:
                 if dp[c - w] + v > dp[c]:
                     dp[c] = dp[c - w] + v
                     chosen[c] = chosen[c - w] + [i]
+                    time += 1
 
-        return chosen[capacity]
+        memory = sum([len(c) for c in chosen])
 
-    def fptas(self) -> list[int]:
+        return chosen[capacity], [time, memory]
+
+    def fptas(self) -> (list[int], list[int]):
+        time: int = 0
+        memory: int = 0
+
         items: list[list[float]] = [[v, w] for v, w in self.items]
 
         maxValue: float = max(*[w for _, w in self.items])
         K: float = self.epsilon * maxValue / len(items)
         newItems: list[list[int]] = [[float(math.floor(v / K)), math.ceil(w)] for v, w in items]
 
+        time = memory = len(newItems)
+
         chosen: list[int]
+        complexity: list[int]
 
         self.items = newItems
-        chosen = self.dynamic()
+        chosen, complexity = self.dynamic()
         self.items = items
 
-        return chosen
+        return chosen, [complexity[0] + time, complexity[1] + memory]

@@ -1,43 +1,52 @@
-from solver.solverLogic import solverLogic
 from time import time
+from typing import Callable
+
+from solver.solverLogic import solverLogic
+
+BRUTE = 0
+GREEDY = 1
+DYNAMIC = 2
+FPTAS = 3
 
 
-def main() -> None:
+def testAlgo(algo: int, capacity: int, data: list[list[float | int]]) -> None:
     logic: solverLogic = solverLogic()
 
-    capacity: int = 10
-    data: list[list[float | int]] = [[3.0, 5], [7.0, 4], [3.33, 11]]  # value, weight
+    algorithm: Callable[[], (list[int], list[int])] = lambda: ([], [0, 0])
 
-    n : int = len(data)
-    print('n = ', n)
-    print('Algorithm, value, time')
+    match algo:
+        case 0:
+            print('Brute', end=' ')
+            algorithm = logic.brute
+        case 1:
+            print('Greedy')
+            algorithm = logic.greedy
+        case 2:
+            print('Dynamic')
+            algorithm = logic.dynamic
+        case 3:
+            print('FPTAS')
+            algorithm = logic.fptas
 
     logic.loadData(capacity, data)
 
-    start : time = time()
-    result : list[int] = logic.brute()
-    end : time = time()
-    value : float = sum([data[i][0] for i in result])
-    print('Brute', value, end - start)
+    print(f'n: {len(data)}')
 
-    start: time = time()
-    result: list[int] = logic.greedy()
-    end: time = time()
-    value: float = sum([data[i][0] for i in result])
-    print('Greedy', value, end - start)
+    chosen: list[int]
+    complexity: list[int]
 
-    start: time = time()
-    result: list[int] = logic.dynamic()
-    end: time = time()
-    value: float = sum([data[i][0] for i in result])
-    print('Dynamic', value, end - start)
+    chosen, complexity = algorithm()
 
-    start: time = time()
-    result: list[int] = logic.fptas()
-    end: time = time()
-    value: float = sum([data[i][0] for i in result])
-    print('FPTAS', value, end - start)
+    value: int = sum([data[i][0] for i in chosen])
 
+    print(f'value : {value} ; complexity : time {complexity[0]}, memory {complexity[1]}')
+
+
+def main() -> None:
+    capacity: int = 10
+    data: list[list[float | int]] = [[3.0, 5], [7.0, 4], [3.33, 11]]  # value, weight
+
+    testAlgo(BRUTE, capacity, data)
 
 
 if __name__ == '__main__':
