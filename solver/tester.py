@@ -32,8 +32,6 @@ def testAlgo(algo: int, capacity: int, data: list[list[float | int]]) -> None:
 
     logic.loadData(capacity, data)
 
-    print(f'n = {len(data)}')
-
     chosen: list[int]
     complexity: list[int]
 
@@ -63,8 +61,6 @@ def main() -> None:
         items: list[list[float | int]] = []
         capacity: int = 0
 
-        item: list[int | float] = [0.0, 0]
-
         minWeight: float = sys.float_info.max
         sumWeight: float = 0.0
 
@@ -85,7 +81,9 @@ def main() -> None:
             capacity = math.floor(normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6))
 
         print(capacity, items)
+        print(f'n = {size}')
         testAllAlgos(capacity, items)
+        print('')
 
 
 if __name__ == '__main__':
