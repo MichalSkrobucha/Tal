@@ -1,3 +1,6 @@
+import math
+import sys
+from random import expovariate, normalvariate
 from typing import Callable
 
 from solver.solverLogic import solverLogic
@@ -51,7 +54,38 @@ def testAllAlgos(capacity: int, data: list[list[float | int]]) -> None:
 def main() -> None:
     # data : [value, weight]
 
-    testAllAlgos(10, [[3.0, 5], [7.0, 4], [3.33, 11]])
+    # testAllAlgos(10, [[3.0, 5], [7.0, 4], [3.33, 11]])
+
+    size: int = 3
+    tests: int = 1
+
+    for _ in range(tests):
+        items: list[list[float | int]] = []
+        capacity: int = 0
+
+        item: list[int | float] = [0.0, 0]
+
+        minWeight: float = sys.float_info.max
+        sumWeight: float = 0.0
+
+        for _ in range(size):
+            value: float = expovariate(0.25).__round__(3)
+            weight: int = math.ceil(expovariate(0.25))
+
+            if weight < minWeight:
+                minWeight = weight
+
+            sumWeight += weight
+
+            items.append([value, weight])
+
+        capacity = math.floor(normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6))
+
+        while capacity <= 0:
+            capacity = math.floor(normalvariate((sumWeight + minWeight) / 2, (sumWeight - minWeight) / 6))
+
+        print(capacity, items)
+        testAllAlgos(capacity, items)
 
 
 if __name__ == '__main__':
